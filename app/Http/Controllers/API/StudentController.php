@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Students;
+use App\Models\Teachers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 class StudentController extends Controller
 {
     /**
@@ -17,7 +19,11 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students=Students::all();
+        $students = DB::table('students')
+            ->join('users', 'users.id', '=', 'students.user_id')
+            ->select('students.id','users.name','users.phone_number','email')
+            ->get();
+        
         return response()->json(["data"=>$students],200);
     }
 
@@ -83,7 +89,14 @@ class StudentController extends Controller
      */
     public function edit($id)
     {
-        //
+        
+        $students = DB::table('students')
+            ->join('users', 'users.id', '=', 'students.user_id')
+            ->select('students.id','users.name','users.phone_number','email','students.*')
+            ->where('students.id',$id)
+            ->get();
+        
+        return response()->json(["data"=>$students],200);
     }
 
     /**
@@ -95,7 +108,17 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $students = Students::find($id);
+        $data = $request->all();
+        $user=User::find($students->user_id);
+        foreach ($data as $key => $value) {
+            if (is_null($value)) {
+                unset($data[$key]);
+            }
+        }
+        $user->update($data);
+        $students->update($data);
+        return response()->json(["msg" => "Data updated Successfully"], 200);
     }
 
     /**
@@ -106,6 +129,10 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $students=Students::find($id);
+        $user=User::find($students->user_id);
+        $user->delete();
+        $students->delete();
+        return response()->json(["msg" => "User deleted Successfully"], 200);
     }
 }

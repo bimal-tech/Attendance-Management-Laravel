@@ -12,6 +12,7 @@ class AuthController extends Controller
     {
         $email = $request->email;
         $password = $request->password;
+
         $authenticated =  Auth::attempt($request->only(['email', 'password']));
         if (!$authenticated) {
             return ["success" => false, "msg" => "Not Authenticated"];

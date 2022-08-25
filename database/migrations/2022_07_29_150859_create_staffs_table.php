@@ -16,8 +16,6 @@ return new class extends Migration
         Schema::create('staffs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->integer('salary')->nullable();
-            $table->integer('incentives')->nullable();
             $table->string('post')->nullable();
             // $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

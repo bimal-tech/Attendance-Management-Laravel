@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('scholarship_types', function (Blueprint $table) {
+        Schema::create('attendance_records', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->integer('percentage');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('status')->nullable();
+            $table->dateTime('clock_in')->nullable();
+            $table->dateTime('clock_out')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scholarship_types');
+        Schema::dropIfExists('attendance_records');
     }
 };

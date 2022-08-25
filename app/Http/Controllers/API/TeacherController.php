@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class TeacherController extends Controller
 {
@@ -18,8 +19,11 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $teachers=Teachers::all();
-        return response()->json(["data"=>$teachers],200);
+        $teachers = DB::table('teachers')
+            ->join('users', 'users.id', '=', 'teachers.user_id')
+            ->select('teachers.id', 'users.name', 'users.phone_number', 'email')
+            ->get();
+        return response()->json(["data" => $teachers], 200);
     }
 
     /**
@@ -43,9 +47,9 @@ class TeacherController extends Controller
         $data = $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'post'=>'required',
-            'email'=>'required',
-            'phone_number'=>'required',
+            'post' => 'required',
+            'email' => 'required',
+            'phone_number' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -55,9 +59,9 @@ class TeacherController extends Controller
             $pw = Hash::make($data['phone_number']);
             $user->password = $pw;
             $user->save();
-            $staff=Teachers::create($data);
-            $staff_id=User::all()->where('email',$data['email'])[0]->id;
-            $staff->user_id=$staff_id;
+            $staff = Teachers::create($data);
+            $staff_id = User::all()->where('email', $data['email'])[0]->id;
+            $staff->user_id = $staff_id;
             $staff->save();
             return response()->json(["msg" => "User Created Successfully"], 200);
         }
@@ -82,7 +86,12 @@ class TeacherController extends Controller
      */
     public function edit($id)
     {
-        //
+        $teachers = DB::table('teachers')
+            ->join('users', 'users.id', '=', 'teachers.user_id')
+            ->select('teachers.id', 'users.name', 'users.phone_number', 'email','teachers.*')
+            ->where('teachers.id','=',$id)
+            ->get();
+        return response()->json(["data" => $teachers], 200);
     }
 
     /**
@@ -94,7 +103,19 @@ class TeacherController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $teachers = Teachers::find($id);
+        $user=User::find($teachers->user_id);
+        
+        $data = $request->all();
+        foreach ($data as $key => $value) {
+            if (is_null($value)) {
+                unset($data[$key]);
+            }
+        }
+
+        $teachers->update($data);
+        $user->update($data);
+        return response()->json(["msg" => "Data updated Successfully"], 200);
     }
 
     /**
@@ -105,6 +126,10 @@ class TeacherController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $teachers = Teachers::find($id);
+        $user = User::find($teachers->user_id);
+        $user->delete();
+        $teachers->delete();
+        return response()->json(["msg" => "User deleted Successfully"], 200);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\User;
 class Staffs extends Model
 {
     use HasFactory;
@@ -13,6 +13,8 @@ class Staffs extends Model
         'user_id',
         'incentives',
         'post'
-
     ];
+    public function users(){
+        return $this->belongsTo(User::class);
+     }
 }

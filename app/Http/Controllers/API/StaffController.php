@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Staffs;
+use Illuminate\Support\Facades\DB;
+
 class StaffController extends Controller
 {
     /**
@@ -17,8 +19,11 @@ class StaffController extends Controller
      */
     public function index()
     {
-        $staff=Staffs::all();
-        return response()->json(["data"=>$staff],200);
+        $staff = DB::table('staffs')
+            ->join('users', 'users.id', '=', 'staffs.user_id')
+            ->select('staffs.id', 'users.name', 'users.phone_number', 'email')
+            ->get();
+        return response()->json(["data" => $staff], 200);
     }
 
     /**
@@ -42,9 +47,9 @@ class StaffController extends Controller
         $data = $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'post'=>'required',
-            'email'=>'required',
-            'phone_number'=>'required',
+            'post' => 'required',
+            'email' => 'required',
+            'phone_number' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -54,9 +59,9 @@ class StaffController extends Controller
             $pw = Hash::make($data['phone_number']);
             $user->password = $pw;
             $user->save();
-            $staff=Staffs::create($data);
-            $staff_id=User::all()->where('email',$data['email'])[0]->id;
-            $staff->user_id=$staff_id;
+            $staff = Staffs::create($data);
+            $staff_id = User::all()->where('email', $data['email'])[0]->id;
+            $staff->user_id = $staff_id;
             $staff->save();
             return response()->json(["msg" => "User Created Successfully"], 200);
         }
@@ -81,7 +86,12 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
-        //
+        $staff = DB::table('staffs')
+            ->join('users', 'users.id', '=', 'staffs.user_id')
+            ->select('staffs.id', 'users.name', 'users.phone_number', 'email','staffs.*')
+            ->where('staffs.id','=',$id)
+            ->get();
+        return response()->json(["data" => $staff], 200);
     }
 
     /**
@@ -93,7 +103,17 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $staffs = Staffs::find($id);
+        $user=User::find($staffs->user_id);
+        $data = $request->all();
+        foreach ($data as $key => $value) {
+            if (is_null($value)) {
+                unset($data[$key]);
+            }
+        }
+        $staffs->update($data);
+        $user->update($data);
+        return response()->json(["msg" => "Data updated Successfully"], 200);
     }
 
     /**
@@ -104,6 +124,9 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $staff = Staffs::find($id);
+        $user = User::find($staff->user_id);
+        $user->delete();
+        return response()->json(["msg" => "User deleted Successfully"], 200);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\User;
 class Teachers extends Model
 {
     use HasFactory;
@@ -14,4 +14,7 @@ class Teachers extends Model
         'incentives',
         'post'
     ];
+    public function users(){
+        return $this->belongsTo(User::class);
+     }
 }

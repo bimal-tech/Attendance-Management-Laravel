@@ -19,8 +19,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users=User::all();
-        return response()->json(["data"=>$users],200);
+        $users = User::all();
+        return response()->json(["data" => $users], 200);
     }
 
     /**
@@ -68,7 +68,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-//
+        //
     }
 
     /**
@@ -79,7 +79,8 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $users = User::find($id);
+        return response()->json(["data" => $users], 200);
     }
 
     /**
@@ -91,7 +92,15 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+        $data = $request->all();
+        foreach ($data as $key => $value) {
+            if (is_null($value)) {
+                unset($data[$key]);
+            }
+        }
+        $user->update($data);
+        return response()->json(["msg" => "Data updated Successfully"], 200);
     }
 
     /**
@@ -102,7 +111,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-//
+        $user=User::find($id);
+        $user->delete();
+        return response()->json(["msg" => "User deleted Successfully"], 200);
     }
-
 }
