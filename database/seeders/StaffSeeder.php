@@ -18,7 +18,7 @@ class StaffSeeder extends Seeder
     public function run(Faker $faker)
     {
         for ($i = 20; $i < 40; $i++) {
-            DB::table('teachers')->insert([
+            DB::table('staffs')->insert([
                 'user_id' => $i,
                 'post' => $faker->text($maxNbChars = 15),
             ]);

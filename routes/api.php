@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\StaffController;
 use App\Http\Controllers\API\StudentController;
 use App\Http\Controllers\API\TeacherController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,9 @@ Route::get('edit/staff/{staff_id}',[StaffController::class,'edit']); //get reque
 Route::delete('/delete/staff/{staff_id}',[StaffController::class,'destroy']);
 
 
+Route::get('/dashboard',[AttendanceController::class,'dashboard']);
+Route::get('all/attendance',[AttendanceController::class,'index']); //get request
+Route::post('store/attendance',[AttendanceController::class,'store']); //get request
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
