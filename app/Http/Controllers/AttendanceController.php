@@ -44,22 +44,26 @@ class AttendanceController extends Controller
             ->join('users', 'users.id', '=', 'attendance_records.user_id')
             ->where("clock_in", ">", $today)
             ->where('users.role_id', '=', '1')
+            ->where('status', '=', '0')
             ->count();
         $total_present_teacher = DB::table('attendance_records')
             ->join('users', 'users.id', '=', 'attendance_records.user_id')
             ->where("clock_in", ">", $today)
             ->where('users.role_id', '=', '2')
+            ->where('status', '=', '0')
             ->count();
 
         $total_present_staff = DB::table('attendance_records')
             ->join('users', 'users.id', '=', 'attendance_records.user_id')
             ->where("clock_in", ">", $today)
             ->where('users.role_id', '=', '3')
+            ->where('status', '=', '0')
             ->count();
         $total_present_student = DB::table('attendance_records')
             ->join('users', 'users.id', '=', 'attendance_records.user_id')
             ->where("clock_in", ">", $today)
             ->where('users.role_id', '=', '4')
+            ->where('status', '=', '0')
             ->count();
 
         $absent_user = $total_user - $total_present_user;
